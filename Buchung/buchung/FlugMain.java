@@ -5,8 +5,8 @@ import java.awt.EventQueue;
 /**
  * Main Klasse, fuehrt die View aus.
  * 
- * @author Gurparkash
- *
+ * @author Gurparkash Singh
+ * @since 26/09/17
  */
 public class FlugMain {
 	public static void main(String[] args) {
