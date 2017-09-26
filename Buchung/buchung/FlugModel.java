@@ -157,8 +157,8 @@ public class FlugModel {
 	 */
 	public void selectFlight(String airportcode1, String airportcode2) {
 		PreparedStatement preparedStatement = null;
-		String selectSQL = "SELECT * FROM flights WHERE departure_airport = \"" + airportcode1
-				+ "\" AND destination_airport = \"" + airportcode2 + "\"";
+		String selectSQL = "SELECT * FROM FLIGHTS WHERE DEPARTURE_AIRPORT = \"" + airportcode1
+				+ "\" AND DESTINATION_AIRPORT = \"" + airportcode2 + "\"";
 		try {
 			preparedStatement = conn.prepareStatement(selectSQL);
 			ResultSet rs = preparedStatement.executeQuery();
@@ -209,7 +209,7 @@ public class FlugModel {
 	public void addPassagenerToFlight(String vname, String nname, String airline, String flightnr, int row,
 			String seat) {
 		PreparedStatement preparedStatement = null;
-		String selectSQL = "SELECT id FROM passengers order by id desc limit 1";
+		String selectSQL = "SELECT ID FROM passengers ORDER BY ID DESC LIMIT 1";
 		int lastID = 0;
 		try {
 			preparedStatement = conn.prepareStatement(selectSQL);
@@ -217,8 +217,8 @@ public class FlugModel {
 			while (rs.next()) {
 				lastID = Integer.parseInt(rs.getString("id"));
 			}
-			String query = "insert into passengers(id,firstname,lastname,airline,flightnr,rownr,seatposition)"
-					+ "values(?,?,?,?,?,?,?)";
+			String query = "INSERT INTO PASSENGERS(ID,FIRSTNAME,LASTNAME,AIRLINE,FLIGHTNR,ROWNR,SEATPOSITION)"
+					+ "VALUES(?,?,?,?,?,?,?)";
 			PreparedStatement preparedStmt = conn.prepareStatement(query);
 			preparedStmt.setInt(1, lastID + 1);
 			preparedStmt.setString(2, vname);
@@ -261,8 +261,8 @@ public class FlugModel {
 	 */
 	public boolean overBook(String flightnr, String rownr, String seatp) {
 		PreparedStatement preparedStatement = null;
-		String selectSQL = "SELECT * FROM passengers where flightnr=\"" + flightnr + "\"and rownr=\"" + rownr
-				+ "\" and seatposition=\"" + seatp + "\"";
+		String selectSQL = "SELECT * FROM PASSENGERS WHERE FLIGHTNR=\"" + flightnr + "\"AND ROWNR=\"" + rownr
+				+ "\" AND SEATPOSITION=\"" + seatp + "\"";
 		overbook = false;
 		try {
 			preparedStatement = conn.prepareStatement(selectSQL);
