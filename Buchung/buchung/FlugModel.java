@@ -60,6 +60,9 @@ public class FlugModel {
 
 	}
 
+	public FlugModel() {
+
+	}
 
 	/**
 	 * Konstruktor
@@ -104,6 +107,186 @@ public class FlugModel {
 
 		}
 
+	}
+
+	/**
+	 * Methode die alle Flughafen vom gegebenen Land aus der DB in die HashMap
+	 * airportMap hinzufügt.
+	 * 
+	 * @param countrycode
+	 *            dient zum bestimmen der Flughaefen.
+	 */
+	public void selectAirpotFromCountry(String countrycode) {
+		PreparedStatement preparedStatement = null;
+		String selectSQL = "SELECT * FROM AIRPORTS WHERE COUNTRY = \"" + countrycode + "\"";
+
+		try {
+			preparedStatement = conn.prepareStatement(selectSQL);
+			ResultSet rs = preparedStatement.executeQuery();
+			while (rs.next()) {
+				String code = rs.getString("airportcode");
+				String name = rs.getString("name");
+				airportMap.put(name, code); // Key: Airportname
+											// Value:Airportcode
+			}
+		} catch (SQLException e) {
+
+			System.out.println(e.getMessage());
+
+		} finally {
+
+			if (preparedStatement != null) {
+				try {
+					preparedStatement.close();
+				} catch (SQLException e) {
+					System.err.println("Exception!");
+					System.err.println(e.getMessage());
+				}
+			}
+
+		}
+	}
+
+	/**
+	 * Zeigt alle Fluege zwischen 2 Flughaefen an, die aus der DB ausgelesen
+	 * werden, fuegt die Werte in ein Array(einzelne Daten zum Flug) und danach
+	 * in eine ArrayList(Flug).
+	 * 
+	 * @param airportcode1
+	 * @param airportcode2
+	 */
+	public void selectFlight(String airportcode1, String airportcode2) {
+		PreparedStatement preparedStatement = null;
+		String selectSQL = "SELECT * FROM flights WHERE departure_airport = \"" + airportcode1
+				+ "\" AND destination_airport = \"" + airportcode2 + "\"";
+		try {
+			preparedStatement = conn.prepareStatement(selectSQL);
+			ResultSet rs = preparedStatement.executeQuery();
+			while (rs.next()) {
+				String code = rs.getString("airline");
+				String name = rs.getString("flightnr");
+
+				String depTime = rs.getString("departure_time");
+				String desTime = rs.getString("destination_time");
+				String[] arr = { code, name, depTime, desTime };
+				flightList.add(arr);
+			}
+
+		} catch (SQLException e) {
+
+			System.out.println(e.getMessage());
+
+		} finally {
+
+			if (preparedStatement != null) {
+				try {
+					preparedStatement.close();
+				} catch (SQLException e) {
+					System.err.println("Exception!");
+					System.err.println(e.getMessage());
+				}
+			}
+
+		}
+	}
+
+	/**
+	 * Fuegt einen Passagier zu einem Flug in die DB hinzu.
+	 * 
+	 * @param vname
+	 *            Vorname
+	 * @param nname
+	 *            Nachname
+	 * @param airline
+	 *            Airline
+	 * @param flightnr
+	 *            Flugnummer
+	 * @param row
+	 *            Sitzreihe
+	 * @param seat
+	 *            Sitzposition
+	 */
+	public void addPassagenerToFlight(String vname, String nname, String airline, String flightnr, int row,
+			String seat) {
+		PreparedStatement preparedStatement = null;
+		String selectSQL = "SELECT id FROM passengers order by id desc limit 1";
+		int lastID = 0;
+		try {
+			preparedStatement = conn.prepareStatement(selectSQL);
+			ResultSet rs = preparedStatement.executeQuery();
+			while (rs.next()) {
+				lastID = Integer.parseInt(rs.getString("id"));
+			}
+			String query = "insert into passengers(id,firstname,lastname,airline,flightnr,rownr,seatposition)"
+					+ "values(?,?,?,?,?,?,?)";
+			PreparedStatement preparedStmt = conn.prepareStatement(query);
+			preparedStmt.setInt(1, lastID + 1);
+			preparedStmt.setString(2, vname);
+			preparedStmt.setString(3, nname);
+			preparedStmt.setString(4, airline);
+			preparedStmt.setString(5, flightnr);
+			preparedStmt.setInt(6, row);
+			preparedStmt.setString(7, seat);
+			preparedStmt.execute();
+
+		} catch (SQLException e) {
+
+			System.out.println(e.getMessage());
+
+		} finally {
+
+			if (preparedStatement != null) {
+				try {
+					preparedStatement.close();
+				} catch (SQLException e) {
+					System.err.println("Exception!");
+					System.err.println(e.getMessage());
+				}
+			}
+
+		}
+	}
+
+	/**
+	 * Prueft ob der Sitz zum gegebenen Flug schon besetzt ist!
+	 * 
+	 * @param flightnr
+	 *            Flugnummer
+	 * @param rownr
+	 *            Sitzreihe
+	 * @param seatp
+	 *            Sitzposition
+	 * @return <true>Der Sitz ist schon belegt.</true><false>Der Sitz ist nicht
+	 *         belegt.</false>
+	 */
+	public boolean overBook(String flightnr, String rownr, String seatp) {
+		PreparedStatement preparedStatement = null;
+		String selectSQL = "SELECT * FROM passengers where flightnr=\"" + flightnr + "\"and rownr=\"" + rownr
+				+ "\" and seatposition=\"" + seatp + "\"";
+		overbook = false;
+		try {
+			preparedStatement = conn.prepareStatement(selectSQL);
+			ResultSet rs = preparedStatement.executeQuery();
+			if (rs.next()) {
+				overbook = true;
+			}
+		} catch (SQLException e) {
+
+			System.out.println(e.getMessage());
+
+		} finally {
+
+			if (preparedStatement != null) {
+				try {
+					preparedStatement.close();
+				} catch (SQLException e) {
+					System.err.println("Exception!");
+					System.err.println(e.getMessage());
+				}
+			}
+
+		}
+		return overbook;
 	}
 
 	/**
