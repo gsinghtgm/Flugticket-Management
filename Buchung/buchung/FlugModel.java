@@ -20,10 +20,6 @@ import javax.swing.JOptionPane;
  */
 public class FlugModel {
 	private static Connection conn = null;
-	private String userName = "testing";
-	private String password = "12345";
-	private String hostname = "localhost";
-	private int port = 3306;
 	HashMap<String, String> countryMap = new HashMap<String, String>();
 	HashMap<String, String> airportMap = new HashMap<String, String>();
 	// HashMap<String, String> flightMap = new HashMap<String, String>();
@@ -48,7 +44,7 @@ public class FlugModel {
 			String dbName = "flightdata";
 			String driver = "com.mysql.jdbc.Driver";
 			Class.forName(driver).newInstance();
-			conn = DriverManager.getConnection(url + dbName, userName, password);
+			conn = DriverManager.getConnection(url + dbName, username, password);
 			System.out.println("Connected to the database");
 			// execute the preparedstatement
 
